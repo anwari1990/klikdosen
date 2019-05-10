@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title', 'Page Not Found')
+@section('message', 404)

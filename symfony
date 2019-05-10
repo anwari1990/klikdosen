@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?php
+
+require 'vendor/autoload.php';
+
+$app = require_once 'bootstrap/app.php';
+
+$app->get(App\Console\Kernel::class)->handle(new Symfony\Component\Console\Input\ArgvInput, new Symfony\Component\Console\Output\ConsoleOutput);

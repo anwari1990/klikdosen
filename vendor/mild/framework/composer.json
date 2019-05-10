@@ -1,0 +1,33 @@
+{
+    "name" : "mild/framework",
+    "keywords": ["framework", "mild", "php"],
+    "license": "MIT",
+    "description": "The Mild PHP Framework",
+    "authors": [
+        {
+            "name": "Mochammad Riyadh Ilham Akbar Pasya",
+            "email": "ilhampasya220317@gmail.com"
+        }
+    ],
+    "autoload": {
+        "files" : [
+            "Mild/Supports/helpers.php"
+        ],
+        "psr-4": {
+            "Mild\\" : "Mild/"
+        }
+    },
+    "require": {
+        "php": "^7.1.3",
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.1"
+    },
+    "require-dev": {
+        "filp/whoops": "^2.1.4"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

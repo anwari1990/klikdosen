@@ -1,0 +1,21 @@
+@extends('auth/layout')
+@section('title', 'Forgot Password')
+@section('content')
+<div class="p-t-13 p-b-9">
+	<span class="txt1">
+		Email
+	</span>
+</div>
+<div class="wrap-input100 validate-input {{ $errors->has('email') ? 'validate-input alert-validate' : '' }}" data-validate = "{{ $errors->first('email') }}">
+	<input class="input100" type="text" value="@old('email')" name="email">
+	<span class="focus-input100"></span>
+</div>
+<div class="container-login100-form-btn m-t-17">
+	<button class="login100-form-btn">
+		Submit
+	</button>
+</div>
+<div class="w-full text-center p-t-55">
+	
+</div>
+@endsection

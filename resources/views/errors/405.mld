@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title', 'Method Not Allowed')
+@section('message', 405)

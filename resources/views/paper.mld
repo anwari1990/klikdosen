@@ -1,0 +1,177 @@
+@extends('master')
+@section('style')
+    <style type="text/css">
+        a.custom-mild {
+            color: #ffffff !important;
+            text-decoration: none;
+            width: 150px;
+            height: 40px;
+        }
+        .link-prevdown {
+            display: flex;
+        }
+        .link-prevdown>a + a {
+            margin-left: 15px;
+        }
+        i.fa-trash:hover {
+            cursor: pointer
+        }
+        #preview {
+            margin-top: 5px;
+        }
+        #preview>canvas {
+            margin-top: 10px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+            width: 100% !important;
+        }
+        #preview>img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+@endsection
+@section('content')
+    <div class="col-md-3 sidebar">
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" style="text-align: center; height: 60px;"><span class="text-muted" style="position: absolute; margin-top: 5px; left: 25%;">RELATED PAPERS</span></li>
+                @foreach($papers as $p)
+                    <li class="list-group-item">
+                        <a href="@route('paper.show', [$p->id])" style="color: inherit;">
+                            {{ (strlen($p->title) <= 28) ? $p->title : substr($p->title, 0, 25).'...' }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <div class="paper-author">
+                    <div class="paper-author-img">
+                        <img src="@url('images/'.$paper->user->picture)" alt="">
+                    </div>
+                    <span class="author_name">
+                    <a href="@route('user', [$paper->user->id])" style="color: inherit;">{{ $paper->user->name }}</a>
+                    @if(session('user'))
+                    @if(session('user')->id === $paper->user_id || session('user')->isAdmin())
+                    <i class="fa fa-trash" style="position: absolute; font-size: 15px; margin-top: 4px; color: red; margin-left: 5px" ></i>
+                    @endif 
+                @endif
+                    </span>
+                    <span>{{ $paper->created_at->diffForHumans() }}</span>
+                    <span class="fa fa-eye"> {{ $paper->views }}</span>
+                </div>
+                <h4 class="card-title"><a style="color:inherit" href="@route('paper.show', [$paper->id])">{{ $paper->title }}</a></h4>
+                @if(strlen($paper->description) > 300)
+                    @php
+                        $description = substr($paper->description, 0, 300);
+                        $moreDescription = substr($paper->description, 300, strlen($paper->description));
+                    @endphp
+                    <p class="card-text text-muted description">
+                        {{ $description }}
+                    </p>
+                    <div class="showMore" style="margin-bottom: 50px; position: relative">
+                        <a href="#" id="showMore" style="margin-top: -13px; position: absolute">Show More</a>
+                        <a href="#" id="showLess" style="margin-top: -13px; position: absolute; display: none;">Show Less</a>
+                    </div>
+                @else
+                    <p class="card-text text-muted">{{ $paper->description }}</p>
+                @endif
+                <div class="link-prevdown">
+                    <a href="@route('download', [$paper->file])" class="btn-mild custom-mild"><i class="fa fa-arrow-down" style="margin-right: 7px"></i>Download</a>
+                    @if(session('user') && session('user')->id === $paper->user->id)
+                        <a data-toggle="modal" href="#" data-target="#editPaperModal" class="btn-mild custom-mild"><i class="fa fa-pencil" style="margin-left: -5px; margin-right: 7px"></i>Edit Paper</a>
+                        <div class="modal fade" id="editPaperModal" tabindex="-1" role="dialog" aria-labelledby="TitleModal" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="TileModal">Edit Paper</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST">
+                                            @method('PUT')
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="name" class="col-form-label">Title:</label>
+                                                <input type="text" class="form-control" value="{{ $paper->title }}" name="title">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="password" class="col-form-label">Description:</label>
+                                                <textarea rows="8" class="form-control" name="description">{{ $paper->description }}</textarea>
+                                            </div>
+                                            <input type="text" name="research" class="form-control">
+                                            <button type="submit" class="btn-mild">Save</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div id="preview">
+            <img src="{{ url('images/widget-loader-lg-en.gif') }}" alt="">
+        </div>
+    </div>
+@endsection
+@section('script')
+<script src="@url('js/pdf/build/pdf.js')"></script>
+    <script type="text/javascript">
+    @if(strlen($paper->description) > 300)
+        $('a#showMore').click(function (e) {
+            e.preventDefault();
+            $('p.description').text($('.description').text() + `{{ $moreDescription }}`)
+            $(this).hide()
+            $('a#showLess').show()
+        });
+        $('a#showLess').click(function (e) {
+            e.preventDefault();
+            $('p.description').text(`{{ $description }}`)
+            $(this).hide()
+            $('a#showMore').show()
+        })
+        @endif
+        $('i.fa-trash').click(function () {
+            $.ajax({
+                url: '@route('paper.delete.api', [$paper->id])',
+                method: 'DELETE',
+                success: function (res) {
+                    if (res.success === true) {
+                        window.location.replace(`@url('/')`)
+                    }
+                }
+            })
+        })
+        var doc = pdfjsLib.getDocument(`{{ url('papers/'.$paper->file) }}`)
+        doc.promise.then(function (pdf) {
+            for (i = 1; i <= pdf.numPages; i++) {
+                pdf.getPage(i).then(function(page) {
+                var scale = 1.348;
+                var viewport = page.getViewport({ scale: scale, });
+                var canvas = document.createElement("canvas");
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                var renderContext = {
+                canvasContext: context,
+                viewport: viewport
+                };
+                page.render(renderContext);
+                $('#preview').append(canvas)
+                if ($('#preview')[0].children.length > 1) {
+                    $('#preview>img').remove()
+                }
+            });
+            }
+        })
+    </script>
+@endsection

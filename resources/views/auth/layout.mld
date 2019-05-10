@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@yield('title')</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="@url('assets/login/images/icons/favicon.ico')"/>
+	<link rel="stylesheet" type="text/css" href="@url('css/app.css')">
+	<link rel="stylesheet" type="text/css" href="@url('assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')">
+	<link rel="stylesheet" type="text/css" href="@url('assets/login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css')">
+    <link rel="stylesheet" type="text/css" href="@url('assets/login/css/util.css')">
+	<link rel="stylesheet" type="text/css" href="@url('assets/login/css/main.css')">
+</head>
+<body>
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-33">
+				<form class="login100-form validate-form flex-sb flex-w" method="post">
+                    @csrf
+					@yield('content')
+				</form>
+			</div>
+		</div>
+    </div>
+    <script src="@url('js/app.js')"></script>
+    <script type="text/javascript">
+        var inputs = document.querySelectorAll('input.input100');
+        for (i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('focus', function () {
+                this.parentElement.classList.remove('alert-validate')
+            })
+        }
+        @if($message = flash('success'))
+            toastr.success('{{ $message }}')
+        @elseif($message = flash('info'))
+            toastr.info('{{ $message }}')
+        @elseif($message = flash('warning'))
+            toastr.warning('{{ $message }}')
+        @elseif($message = flash('error'))
+            toastr.error('{{ $message }}')    
+        @endif
+    </script>
+</body>
+</html>

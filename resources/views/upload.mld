@@ -1,0 +1,96 @@
+@extends('master')
+@section('style')
+    <style type="text/css">
+        .paper-upload {
+            margin-top: 5em;
+            text-align: center;
+        }
+        .card {
+            border-style: dashed !important;
+            border: 2px solid #ddd;
+        }
+        .card:hover {
+            cursor: pointer;
+        }
+        @media(min-width: 990px) {
+            .paper-upload {
+                width: 50%;
+                margin-left: 23%;
+            }
+            .card {
+                height: 220px;
+            }
+            .card-title>h4 {
+                margin-top: 23px;
+            }
+        }
+        @media(min-width: 440px) and (max-width: 990px) {
+            button.choose {
+                width: 50% !important;
+                left: 25%;
+            }
+        }
+    </style>
+@endsection
+@section('title', 'Upload')
+@section('content')
+    <div class="container">
+        <div class="paper-upload">
+            <div class="card">
+                <div class="card-body">
+                <div class="card-title"><h4 class="text-muted">Drag And Drop Your Paper In Here</h4></div>
+                    <button style="margin-top: 30px;" class="btn-mild choose">CHOOSE FILES</button>
+                </div>
+            </div>
+        </div>
+    <div class="modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Paper</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="paper" style="display:none" accept="application/pdf,application/msword,
+  application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+          <div class="form-group">
+            <label class="col-form-label">Title:</label>
+            <input type="text" class="form-control" name="title" value="@old('title')">
+          </div>
+          <div class="form-group">
+            <label class="col-form-label">Description:</label>
+            <textarea rows="8" class="form-control" name="description">@old('description')</textarea>
+          </div>
+          <button class="btn-mild">PUBLISH</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<span style="display: none;" role="button" id="openModal" data-toggle="modal" data-target="#exampleModal">sad</span>
+    </div>
+@endsection
+@section('script')
+    <script type="text/javascript">
+        $('.card-body').click(function () {
+            $('input[name=paper]').click()
+        });
+        $('.card-body').on({
+            dragover: function(e) {
+                e.preventDefault();
+            },
+            drop: function(e) {
+                e.preventDefault()
+                var input = $('input[name=paper]')
+                input.val('C:\fakepath\5cc131e6262a7.pdf')
+            }
+        });
+        $('input[name=paper]').change(function () {
+            $('span#openModal').click()
+        });
+    </script>
+@endsection

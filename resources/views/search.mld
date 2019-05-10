@@ -1,0 +1,56 @@
+@extends('master')
+@section('content')
+    <div class="col-md-3 sidebar">
+        <div class="card" style="width: 18rem;">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" style="text-align: center; height: 60px;"><span class="text-muted" style="position: absolute; margin-top: 5px; left: 20%;">SUGGESTED AUTHOR</span></li>
+                @foreach($userSidebar as $u)
+                    <li class="list-group-item">
+                        <img src="{{ url('images/'.$u->picture) }}" height="45px" width="45px" style="border-radius: 100%" alt="">
+                        <a href="@route('user', [$u->id])" style="margin-left: 5px; color: inherit">{{ $u->name }}</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+<div class="col-md-9 tabchange">
+  <input id="tab1" name="tabs" checked="" type="radio">
+  <label for="tab1">Papers ({{ $papers->getTotal() }})</label>
+  <input id="tab2" name="tabs" type="radio">
+  <label for="tab2">People ({{ $users->getTotal() }})</label>
+  <section id="content1">
+  @foreach($papers as $paper) 
+  <div class="card">
+  <div class="card-body">
+    <div class="paper-author">
+        <div class="paper-author-img">
+            <img src="@url('images/'.$paper->user->picture)" alt="">
+        </div>
+        <span class="author_name"><a href="@route('user', [$paper->user->id])" style="color: inherit;">{{ $paper->user->name }}</a></span>
+        <span>{{ $paper->created_at->diffForHumans() }}</span>
+        <span class="fa fa-eye"> {{ $paper->views }}</span>
+    </div>
+    <h4 class="card-title"><a style="color:inherit" href="@route('paper.show', [$paper->id])">{{ $paper->title }}</a></h4>
+    <p class="card-text text-muted">{{ (strlen($paper->description) > 150) ? substr($paper->description, 0, 100).'...' : $paper->description }}</p>
+  </div>
+</div>
+  @endforeach
+    <div class="py-4">
+        {!! $papers->getLink() !!}
+    </div>
+  </section>
+  <section id="content2">
+  @foreach($users as $user)
+    <div class="card box-shadow">
+			<div class="card-body user-profile">
+                <img src="@url('images/'.$user->picture)" alt="" sizes="" srcset="">
+				<h5 class="card-title"><a href="@route('user', [$user->id])">{{ $user->name }}</a></h5>
+			</div>
+		</div>
+    @endforeach
+    <div class="py-4">
+        {!! $users->getLink() !!}
+    </div>
+  </section>
+</div>
+@endsection

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Suscribe Paper</title>
+    <link rel="stylesheet" href="@url('css/app.css')">
+</head>
+<body>
+    <main class="-py-4">
+        <div class="container">
+            <h5>Hello User</h5>
+            <p class="text-muted">we have new papers to read</p>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">{{ $title }}</h4>
+                    <a href="{{ $link }}" class="btn-mild">Read Paper</a>
+                </div>
+            </div>
+        </div>  
+    </main>
+</body>
+</html>

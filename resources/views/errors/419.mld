@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title', 'Authentication Timeout')
+@section('message', 419)

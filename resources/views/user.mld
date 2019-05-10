@@ -1,0 +1,389 @@
+@extends('master')
+@section('style')
+    <style type="text/css">
+        .user-profile {
+            position: relative;
+        }
+        .user-img {
+            position: relative;
+            width: 125px;
+            height: 125px;
+        }
+        .user-img>img {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+        }
+        form#change_picture_form {
+            display: none;
+        }
+        span.num + span.num {
+            padding: 0 15px;
+            border-left: solid 1px #ddd;
+        }
+        ul.user-info {
+            position: absolute;
+            margin-left: 110px;
+            margin-top: -120px;
+        }
+        @if($user->isCurrentUser)
+            .user-img:hover {
+                cursor: pointer;
+            }
+            input#change-picture {
+                display: none;
+            }
+            span.edit-picture {
+                position: absolute;
+                top: 38%;
+                left: 38%;
+                vertical-align: middle;
+                color: white;
+                font-size: 30px;
+                display: none;
+            }
+            @media(max-width: 440px) {
+                span.edit-picture {
+                    font-size: 18px;
+                }
+            }
+            @media(min-width: 440px) and (max-width: 990px) {
+                span.edit-picture {
+                    font-size: 20px;
+                }
+            }
+            .user-img {
+                background: #000000;
+                border-radius: 100%;
+            }
+            .user-img>img:hover {
+                opacity: 0.5;
+            }
+            .user-img>img:hover+span.edit-picture {
+                display: block;
+            }
+        @endif
+        ul.user-info>li {
+            list-style: none;
+        }
+        ul.user-info>li.name {
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        ul.user-info>li.follower>span.following,span.followed,ul.user-info>li.following_user>span {
+            cursor: pointer;
+        }
+        ul.user-info>li.follower>span.followed {
+            margin-right: 10px
+        }
+        
+        @media(min-width: 990px) {
+            ul.user-info>li.name {
+                font-size: 28px;
+            }
+            li.follower{
+                margin-top: 8px;
+                font-size: 17px;
+            }
+            li.following_user {
+                margin-top: 10px
+            }
+            .tabchange {
+                margin-top: 5rem;
+            }
+        }
+        @media (max-width: 990px) {
+            ul.user-info>li.name {
+                font-size: 22px;
+            }
+            .user-img {
+                width: 90px;
+                height: 90px;
+            }
+            ul.user-info {
+                margin-left: 75px;
+                margin-top: -98px;
+            }
+            span.num + span.num {
+                padding: 0 0.46rem;
+            }
+            ul.user-info>li.following_user {
+                font-size: 14px;
+                margin-top: 2px;
+            }
+            ul.user-info>li.follower>span.followed {
+                margin-right: 5px
+            }
+            ul.user-info>li.follower {
+                font-size: 14px;
+                margin-top: 2px
+            }
+            .tabchange {
+                margin-top: 3rem;
+            }
+        }
+        @media(max-width: 440px) {
+            .user-img {
+                width: 75px;
+                height: 75px;
+            }
+            ul.user-info {
+                margin-left: 50px;
+                margin-top: -78px;
+            }
+            .tabchange {
+                margin-top: 2rem;
+            }
+        }
+        span.dashboard {
+            margin-left: 5px;
+        }
+        span.dashboard>a {
+            color: inherit;
+            text-decoration: none;
+        }
+        li.info>span + span {
+            margin-left: 10px;
+        }
+    </style>
+@endsection
+@section('title', $user->name)
+@section('content')
+<div class="user-profile">
+    <div class="user-img">
+        <img src="@url('images/'.$user->picture)" alt="">
+        @if($user->isCurrentUser)
+        <span class="fa fa-camera edit-picture"></span>
+        @endif
+    </div>
+    @if($user->isCurrentUser)
+        <form method="put" id="change_picture_form" enctype="multipart/form-data">
+            <input type="file" name="picture" id="change_picture_input" accept="image/*">
+        </form>
+    @endif
+    <ul class="user-info">
+        <li class="name">
+            {{ $user->name }}
+        </li>
+        <li class="info" style="font-size: 14px">
+            <span class="text-muted">
+                <i class="fa fa-university"></i> {{ $user->university ? $user->university : 'no university' }}
+            </span>
+            <span class="text-muted">
+                <i class="fa fa-building"></i> {{ $user->departement ? $user->departement : 'no departement' }}
+            </span>
+            <span class="text-muted">
+                <i class="fa fa-phone"></i> {{ $user->phone ? $user->phone : 'no phone' }}
+            </span>
+        </li>
+        <li class="following_user">
+        @if($followingCurrentUser === true)
+        <span class="fa fa-check"> Following</span>
+        @elseif($user->isCurrentUser === false)
+        <span class="fa fa-plus"> Follow</span>
+        @else
+        <span class="fa fa-gear" data-toggle="modal" data-target="#editProfileModal"> Edit Profile</span>
+        @if($user->isAdmin())
+            <span class="fa fa-tachometer dashboard"><a href="@route('dashboard')"> Dashboard</a></span>
+        @endif
+        <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="TitleModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="TileModal">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfile">
+                    <div class="form-group">
+                        <label for="name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" value="{{ $user->name }}" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="departement" class="col-form-label">Departement: </label>
+                        <input type="text" id="departement" class="form-control" value="{{ $user->departement }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="university" class="col-form-label">University: </label>
+                        <input type="text" id="university" class="form-control" value="{{ $user->university }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="col-form-label">Phone: </label>
+                        <input type="text" id="phone" class="form-control" value="{{ $user->phone }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="col-form-label">Password:</label>
+                        <input type="password" class="form-control" id="password">
+                    </div>
+                    <div class="form-group">
+                        <label for="password_confirmation" class="col-form-label">Password Confirmation:</label>
+                        <input type="password" class="form-control" id="password_confirmation">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-mild">Save</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        @endif
+        </li>
+    </ul>
+</div>
+<div class="tabchange">
+  <input id="tab1" name="tabs" checked="" type="radio">
+  <label for="tab1">Papers ({{ $papers->getTotal() }})</label>
+  <input id="tab2" name="tabs" type="radio">
+  <label for="tab2">Followers ({{ $follower }})</label>
+  <input id="tab3" name="tabs" type="radio">
+  <label for="tab3">Followings ({{ $following }})</label>
+  <section id="content1">
+  @foreach($papers as $paper) 
+  <div class="card">
+  <div class="card-body">
+    <div class="paper-author">
+        <div class="paper-author-img">
+            <img src="@url('images/'.$paper->user->picture)" alt="">
+        </div>
+        <span class="author_name"><a href="@route('user', [$paper->user->id])" style="color: inherit;">{{ $paper->user->name }}</a></span>
+        <span>{{ $paper->created_at->diffForHumans() }}</span>
+        <span class="fa fa-eye"> {{ $paper->views }}</span>
+    </div>
+    <h4 class="card-title"><a style="color:inherit" href="@route('paper.show', [$paper->id])">{{ $paper->title }}</a></h4>
+      <p class="card-text text-muted">{{ (strlen($paper->description) > 150) ? substr($paper->description, 0, 100).'...' : $paper->description }}</p>
+  </div>
+</div>
+  @endforeach
+  <div class="py-4">
+        {!! $papers->getLink() !!}
+    </div>
+  </section>
+  <section id="content2">
+  @foreach($followers as $f) 
+            <div class="card box-shadow">
+			<div class="card-body user-profile">
+                <img src="@url('images/'.$f->picture)" alt="" sizes="" srcset="">
+				<h5 class="card-title"><a href="@route('user', [$f->id])">{{ $f->name }}</a></h5>
+			</div>
+		    </div>
+@endforeach 
+  </section>
+  <section id="content3">
+  @foreach($followings as $f) 
+                <div class="card box-shadow">
+                <div class="card-body user-profile">
+                    <img src="@url('images/'.$f->picture)" alt="" sizes="" srcset="">
+                    <h5 class="card-title"><a href="@route('user', [$f->id])">{{ $f->name }}</a></h5>
+                </div>
+                </div>
+                @endforeach
+  </section>
+</div>
+@endsection
+@section('script')
+<script type="text/javascript">
+@if($followingCurrentUser === true)
+$('ul.user-info>li.following_user>span').hover(function () {
+    $(this).click(function () {
+        $.ajax({
+            url: `@route('api.unfollow')`,
+            method: 'POST',
+            data: {
+                'follower_id' : {{ $user->id }},
+                'following_id' : {{ session('user')->id }}
+            },
+            success: function (res) {
+                window.location.replace('@route('user', [$user->id])')
+            }
+        })
+    })
+    
+})
+@elseif($user->isCurrentUser === false)
+$('ul.user-info>li.following_user>span').click(function () {
+    $.ajax({
+        url: `@route('api.follow')`,
+        method: 'POST',
+        data: {
+            'follower_id' : {{ $user->id }},
+        },
+        success: function (res) {
+            if (res.success === false) {
+                window.location.replace(`@route('login')`)
+            } else {
+                window.location.replace('@route('user', [$user->id])')
+            }
+        }
+    })
+})
+@else 
+$('form#editProfile').submit(function (e) {
+    e.preventDefault();
+    editProfile(this)
+})
+$('.modal-footer>button.btn-mild').click(function () {
+    editProfile($('form#editProfile'))
+})
+$('.user-img').click(function () {
+    $('input#change_picture_input').click();
+})
+$('input#change_picture_input').change(function () {
+    $('form#change_picture_form').submit()
+})
+$('form#change_picture_form').submit(function (e) {
+    e.preventDefault()
+    $.ajax({
+        method: 'POST',
+        url: '@route('update_picture', [$user->id])',
+        data: new FormData(this),
+        processData: false,
+        contentType: false,
+        headers : {
+            'X-CSRF-TOKEN': $('meta[name=csrf-token]').attr('content')
+        },
+        success: function () {
+            window.location.replace('@route('user', [$user->id])')
+            return true;
+        }
+    })
+});
+function editProfile(form) {
+    $.ajax({
+        url: `@route('user.edit', [$user->id])`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name=csrf-token]').attr('content')
+        },
+        data: {
+            'name': $('input#name').val(),
+            'password': $('input#password').val(),
+            'password_confirmation': $('input#password_confirmation').val(),
+            'departement' : $('input#departement').val(),
+            'university' : $('input#university').val(),
+            'phone' : $('input#phone').val()
+        },
+        success: function (response) {
+            var error = false;
+            var fields = ['name', 'password', 'departement', 'university', 'phone']
+            for (i = 0; i < fields.length; i++) {
+                var input = $('input#'+fields[i])
+                $(input).removeClass('is-invalid')
+                $(input).next('span').remove()
+                if (response.hasOwnProperty(fields[i])) {
+                    error = true;
+                    $(input).addClass('is-invalid')
+                    $(input).after('<span class="invalid-feedback">'+response[fields[i]][0]+'</span>')
+                }
+            }
+            if (error === false) {
+                window.location.replace('@route('user', [$user->id])')
+            }
+        }
+    })
+}
+@endif
+</script>
+@endsection

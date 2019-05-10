@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title')</title>
+    <link rel="stylesheet" href="@url('css/app.css')">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="@url('assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')">
+    @yield('style')
+    <style type="text/css">
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+        body {
+            background: #f8f8f8;
+            padding-top: 4.5rem;
+            margin-bottom: 60px; /* Margin bottom by footer height */
+        }
+        .paper-author {
+            color: #6c757d;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .paper-author>span + span {
+            margin-left: 57px;
+            font-size: 14px;
+        }
+        .paper-author>span.fa-eye {
+            margin-left: 5px !important;
+            font-size: 14px;
+        }
+        .paper-author>span.author_name {
+            margin-left: 57px;
+            margin-top: -10px;
+            display: block;
+        }
+        .paper-author-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 100%;
+            position: absolute;
+            margin-left: 5px;
+            left: -5px;
+        }
+        .paper-author-img>img {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+        }
+        .btn-mild {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -moz-box;
+            display: -ms-flexbox;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 60px;
+            background: #a64bf4;
+            background: -webkit-linear-gradient(45deg, #00dbde, #fc00ff);
+            background: -o-linear-gradient(45deg, #00dbde, #fc00ff);
+            background: -moz-linear-gradient(45deg, #00dbde, #fc00ff);
+            background: linear-gradient(45deg, #00dbde, #fc00ff);
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none !important;
+            border: none;   
+            color: #fff;
+            line-height: 1.2;
+            -webkit-transition: all 0.4s;
+            -o-transition: all 0.4s;
+            -moz-transition: all 0.4s;
+            transition: all 0.4s;
+            position: relative;
+            z-index: 1;
+        }
+        .navbar-expand-lg {
+            background: #ffffff;
+        }
+        .sidebar {
+            right: 7%;
+            width: 23% !important;
+            position: absolute;
+        }
+        .sidebar>.card {
+            position: fixed;
+        }
+        li.search {
+            margin-left : 50px;
+        }
+        li.search {
+            position: relative;
+        }
+        li.search>form>input:focus {
+            outline: none;
+            box-shadow: ;
+        }
+        i.search-icon {
+            z-index: 80;
+            top: 10px;
+            margin-left: 10px;
+            position: absolute;
+            color: #999;
+            right: 10px;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            height: 60px; /* Set the fixed height of the footer here */
+            line-height: 60px; /* Vertically center the text there */
+        }
+        @media(min-width: 979px) {
+            form.form-inline {
+                display: none;
+            }
+            .yield_menu_mobile {
+                display: none
+            }
+        }
+        @media (max-width: 990px) {
+            li.search {
+                display: none;
+            }
+            .sidebar {
+                display: none !important;
+            }
+            .col-md-9 {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+        }
+        @media(min-width: 978px) and (max-width: 1303px) {
+            .sidebar {
+                right: 4.5%;
+            }
+        }
+        @media (min-width: 990px) and (max-width: 1200px) {
+            li.search>form>input {
+                width: 400px;
+            }
+        }
+        @media(min-width: 1200px) {
+            li.search>form>input {
+                width: 600px;
+            }
+        }
+        .tabchange p {
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.tabchange section {
+  display: none;
+  padding: 20px 0 0;
+  border-top: 1px solid #ddd;
+}
+
+.tabchange input {
+  display: none;
+}
+
+.tabchange label {
+  display: inline-block;
+  margin: 0 0 -1px;
+  padding: 15px 25px;
+  font-weight: 600;
+  text-align: center;
+  color: #bbb;
+  border: 1px solid transparent;
+}
+
+@media(max-width: 979px) {
+    .tabchange label {
+        padding: 15px 7px;
+    }
+}
+
+.tabchange label:before {
+  font-family: fontawesome;
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+.tabchange label:hover {
+  color: #888;
+  cursor: pointer;
+}
+
+.tabchange input:checked + label {
+  color: #555;
+  border: 1px solid #ddd;
+  border-top: 2px solid #a64bf4;
+}
+
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3{
+  display: block;
+}
+
+@media screen and (max-width: 650px) {
+  .tabchange label {
+    font-size: 15px;
+  }
+  .tabchange label:before {
+    margin: 0;
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .tabchange label {
+    .tabchange padding: 15px;
+  }
+}
+    .card + .card {
+        margin-top: 10px;
+    }
+    .user-profile {
+        position: relative;
+    }
+    .user-profile>img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100%;
+        margin-top: -5px;
+    }
+    .user-profile>h5>a {
+        color: inherit !important;
+        position: absolute;
+        margin-left: 3.5rem;
+        margin-top: -35px;
+        
+    }
+    .user-profile {
+        height: 70px;
+    }
+    .user-profile>span {}
+    .user-profile>h5 {
+        margin-top: 3px
+    }
+    .search-result {
+        position: absolute;
+        width: 100%;
+        display: none;
+    }
+    .search-suggest>li.list-group-item {
+        border: none !important;
+        padding: 7px;
+        margin-left: 3px;
+    }
+    .search-suggest:hover, .search-suggest>li.list-group-item:hover {
+        background: #f0f0f0;
+    }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+  <div class="container">
+    <a class="navbar-brand mr-4" href="@url()">@config('app.name')</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" href="@route('upload')">Upload</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="@route('message')">Message</a>
+            </li>
+            <div class="yield_menu_mobile">
+                @yield('menu')
+            </div>
+            <li class="nav-item search">
+                <form autocomplete="off" action="@route('search')" method="get">
+                    <i class="fa fa-search search-icon"></i>
+                    <input id="liveSearch" type="search" name="q" value="{{ isset($q) ? $q : '' }}" class="form-control" placeholder="What your looking for?">
+                </form>
+                <div class="card search-result">
+                    <ul class="list-group">
+
+                    </ul>
+                </div>
+            </li>
+        </ul>
+        <ul class="navbar-nav">
+        @if(!empty($user = session('user')))
+        <li class="nav-item">
+            <a href="@route('user', [$user->id])" class="nav-link">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a href="@route('logout')" class="nav-link">Sign Out</a>
+        </li>
+        @else 
+        <li class="nav-item">
+            <a href="@route('login')" class="nav-link">Sign In</a>
+        </li>
+        <li class="nav-item">
+            <a href="@route('register')" class="nav-link">Sign Up</a>
+        </li>
+        @endif
+        <li class="nav-item">
+            <form action="@route('search')" class="form-inline my-2 my-lg-0">
+                <input name="q" value="{{ isset($q) ? $q : '' }}" class="form-control" type="search" name="q" placeholder="What your looking for?" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </li>
+        </ul>
+    </div>
+  </div>
+</nav>
+<main role="main" class="container">
+    <div id="app">
+        @yield('content')
+    </div>
+</main>
+<script src="@url('js/app.js')"></script>
+<script type="text/javascript">
+@if($message = flash('success'))
+    toastr.success('{{ $message }}')
+@elseif($message = flash('info'))
+    toastr.info('{{ $message }}')
+@elseif($message = flash('warning'))
+    toastr.warning('{{ $message }}')
+@elseif($message = flash('error'))
+    toastr.error('{{ $message }}')    
+@endif
+    $('#liveSearch').keyup(function (e) {
+    if (e.which == 8 && $(this).val() =='') {
+        $('.search-result').hide();
+    } else {
+        $.ajax({
+            url: '@route('search.api')',
+            method: 'GET',
+            data: {
+                q: $(this).val()
+            },
+            success: function (response) {
+                if (response.length > 0) {
+                    var box = ''
+                    var url = '@url('paper')'
+                    $('.search-result>ul.list-group').html(box)
+                    response.forEach(function (val) {
+                        box += `<div class="search-suggest"><li class="list-group-item"><a href="${url}/${val.id}" style="color: inherit; text-decoration: none">${val.title}</a></li></div>`
+                    })
+                    $('.search-result>ul.list-group').html(box)
+                    $('.search-result').show()
+                } else {
+                    $('.search-result').hide()
+                }
+            }
+        })
+    }
+    })
+    $('#liveSearch').focusout(function () {
+        setTimeout(function() {
+            $('.search-result').hide()
+        }, 150);
+    })
+</script>
+@yield('script')
+</body>
+</html>

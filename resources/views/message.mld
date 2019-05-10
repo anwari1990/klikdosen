@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Message</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="#">
+		<link rel="stylesheet" href="@url('css/app.css')">
+		<link href="@url('css/swipe.min.css')" type="text/css" rel="stylesheet">
+	</head>
+	<body>
+		<!-- Layout -->
+		<div class="layout">
+			<!-- Start of Sidebar -->
+			<div class="sidebar">
+				<div class="container">
+					<div class="tab-content">
+						<!-- Start of Discussions -->
+						<div class="tab-pane fade show active" id="conversations" role="tabpanel">
+							<div class="top">
+								<form>
+									<input type="search" class="form-control search" placeholder="Search">
+									<button type="submit" class="btn prepend"><i data-eva="search"></i></button>
+								</form>
+							</div>
+							<div class="middle">
+								<h4>Discussions</h4>
+								<hr>
+								<ul class="nav discussions" role="tablist">
+									
+								</ul>
+							</div>
+						</div>
+						<!-- End of Discussions -->
+					</div>
+				</div>
+			</div>
+			<!-- End of Sidebar -->
+			<!-- Start of Chat -->
+			<div class="chat">
+				<div class="tab-content">
+					
+				</div>
+			</div>
+			<!-- End of Chat -->
+		</div>
+		<!-- Layout -->
+        <script src="@url('js/app.js')"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				showContact()
+				clickContact()
+			})
+			$('input.search').keyup(function () {
+				showContact($(this).val())
+			})
+			function showContact(q = '')
+			{
+				$.ajax({
+					url: `@route('message.search.user')`,
+					method: 'POST',
+					data: {
+						'_token' : `{{ csrf_token() }}`,
+						'q': q
+					},
+					success: function (response) {
+						$('ul.discussions').html('')
+						response.forEach(function (res) {
+							$.ajax({
+								url: `@url('message')/${res.id}`,
+								method: 'GET',
+								success: response => {
+									var append = `<li id="${res.id}">
+								<a href="#chat1" class="filter direct active" data-chat="open" data-toggle="tab" role="tab" aria-controls="chat1" aria-selected="true">
+									<div class="status online">
+									<img src="@url('images')/${res.picture}" alt="avatar"><i data-eva="radio-button-on"></i></div>
+										<div class="content">
+										<div class="headline">
+											<h5>${res.name}</h5>
+										</div>`
+									var index = 0;
+									if (response['messages'].length > 0) {
+										index = response['messages'].length - 1
+									}
+									if (index in response['messages']) {
+										append += `<p>${response['messages'][index].context}</p>`
+									} else {
+										append += '<p>Click Here To Chat</p>'
+									}
+									$('ul.discussions').append(append + `</div></a></li>`)
+								}
+							})
+						})
+						return false
+					}
+				})
+				return false
+			}
+			function clickContact()
+			{
+				$(document).on('click', 'ul.discussions>li', function () {
+					var $this = this
+					$.ajax({
+						url: `@url('message')/${$(this).attr('id')}`,
+						method: 'GET',
+						success: function (res) {
+							var name = $($($this).children()[0].children[1].children[0].children[0]).text()
+							var picture = $($($this).children()[0].children[0].children[0]).attr('src')
+							var append = `<div class="tab-pane fade show active" id="chat1" role="tabpanel">
+						<div class="item">
+							<div class="content">
+								<div class="container">
+									<div class="top">
+										<div class="headline">
+											<img src="${picture}" alt="avatar">
+											<div class="content">
+												<h5>${name}</h5>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="middle" id="scroll">
+									<div class="container">
+									<ul>`
+									res['messages'].forEach(function (val) {
+										if (val.sender != `{{ session('user')->id }}`) {
+											append += `<li style="text-align: left; justify-content: flex-start;">
+												<img style="margin-right: 15px; margin-left: 0; -ms-flex-order: 1; order: 1;" src="${picture}" alt="avatar">
+												<div class="content">
+													<div class="message">
+														<div class="bubble" style="background: #f5f5f5;">
+															<p style="color: #bdbac2;">${val.context}</p>
+														</div>
+													</div>
+													<span>${val.created_at}</span>
+												</div>
+											</li>`
+										} else {
+											append += `<li style="text-align: right; justify-content: flex-end;">
+												<div class="content">
+													<div class="message">
+														<div class="bubble" style="display: inline-block; max-width: 360px; background: #007bff; text-align: left; border-radius: 6px;">
+															<p style="padding: 15px 20px; color: #fff;">${val.context}</p>
+														</div>
+													</div>
+													<span>${val.created_at}</span>
+												</div>
+											</li>`
+										}
+									})
+									append += `</ul></div>
+								</div>
+								<div class="container">
+									<div class="bottom">
+										<form>
+											<textarea id="${res['recipient']}" class="form-control message" placeholder="Type message..." rows="1"></textarea>
+											<button type="submit" class="btn prepend"><i data-eva="paper-plane"></i></button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>`
+					$('.chat>.tab-content').html(append)
+					var objDiv=document.getElementById('scroll');objDiv.scrollTop=objDiv.scrollHeight
+								return false		
+						}
+					})
+					return false
+				})
+				return false
+			}
+			$(document).on('keyup', 'textarea.message', function (e) {
+				var $this = this
+				if (e.keyCode == 13) {
+					$.ajax({
+						url: `@url('message')/${$(this).attr('id')}`,
+						method: 'POST',
+						data : {
+							'_token': `{{ csrf_token() }}`,
+							'message': $(this).val()
+						},
+						success: function(res) {
+							var ul = $($this).parent().parent().parent().prev().children().children()[0]
+							var append = ''
+									var image = $($(ul).parent().parent().prev().parent().children()[0].children[0].children[0].children[0]).attr('src')
+									res['messages'].forEach(function (val) {
+										if (val.sender != `{{ session('user')->id }}`) {
+											append += `<li style="text-align: left; justify-content: flex-start;">
+												<img style="margin-right: 15px; margin-left: 0; -ms-flex-order: 1; order: 1;" src="${image}" alt="avatar">
+												<div class="content">
+													<div class="message">
+														<div class="bubble" style="background: #f5f5f5;">
+															<p style="color: #bdbac2;">${val.context}</p>
+														</div>
+													</div>
+													<span>${val.created_at}</span>
+												</div>
+											</li>`
+										} else {
+											append += `<li style="text-align: right; justify-content: flex-end;">
+												<div class="content">
+													<div class="message">
+														<div class="bubble" style="display: inline-block; max-width: 360px; background: #007bff; text-align: left; border-radius: 6px;">
+															<p style="padding: 15px 20px; color: #fff;">${val.context}</p>
+														</div>
+													</div>
+													<span>${val.created_at}</span>
+												</div>
+											</li>`
+										}
+									})
+									$(ul).html(append)
+									var objDiv=document.getElementById('scroll');objDiv.scrollTop=objDiv.scrollHeight
+									$($this).val('')
+						}
+					})
+				}
+			})
+		</script>
+		<script src="@url('js/feather.min.js')"></script>
+		<script src="@url('js/eva.min.js')"></script>
+		<script src="@url('js/swipe.min.js')"></script>
+	</body>
+</html>																																																										

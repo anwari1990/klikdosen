@@ -1,0 +1,3 @@
+@extends('layout')
+@section('title', 'Request Entity Too Large')
+@section('message', 413)
